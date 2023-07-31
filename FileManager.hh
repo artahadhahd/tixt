@@ -14,14 +14,11 @@ struct DirectoryContent {
   FileType filetype;
 };
 
-// Returns std::nullopt if the input is a file instead of a directory
-std::optional<std::vector<DirectoryContent>> get_directory_contents(
-    std::string);
-
 class FileManager {
  public:
   FileManager(std::string const path) { this->path = path; }
 
+  // Returns std::nullopt if the input is a file instead of a directory
   std::optional<std::vector<DirectoryContent>> get_directory_contents();
 
  private:

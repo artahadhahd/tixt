@@ -46,11 +46,13 @@ i32 main(i32 argc, char *argv[]) {
   move(cursy, cursx);
   i32 input, poll;
   u32 idx = 0;
+  // this is how many files are in the directory
+  u32 const sizec = dirc.value().size() - 1;
   // pidx stores the previous value of idx. once pidx is updated, the screen
   // will be "re-rendered"
   u32 pidx = 2;
   bool running = true;
-  i32 maxY = getmaxy(stdscr);
+  u32 maxY = getmaxy(stdscr);
   while (running) {
     if (pidx != idx) {
       for (u64 i = idx; i < dirc->size() && i < (u64)maxY - 1 + idx; i++) {
@@ -74,7 +76,10 @@ i32 main(i32 argc, char *argv[]) {
         break;
       case ctrl('s'):
         if ((poll = getch()) == ctrl('s')) {
-          cursy = maxY - 2;
+          if (sizec < maxY - 2)
+            cursy = sizec;
+          else
+            cursy = maxY - 2;
         } else if (poll == ENTERKEY) {
           W_MESSAGE("Operation not possible");
         } else {
@@ -105,6 +110,8 @@ i32 main(i32 argc, char *argv[]) {
         if (cursy != 0) cursy--;
         if (cursy == 0 && idx != 0) idx--;
         break;
+      case '0' ... '9':
+        [[fallthrough]];
       case 'a' ... 'z':
         [[fallthrough]];
       case 'A' ... 'Z':
