@@ -68,22 +68,43 @@ i32 main(i32 argc, char *argv[]) {
       pidx = idx;
     }
     jy = 0;
+    mvprintw(1, 50, "idx: %d fileidx: %d cursey: %d ", idx, fileidx, cursy);
     move(cursy, cursx);
+    if (fileidx > sizec) fileidx = sizec;
     switch ((input = getch())) {
       case ctrl('w'):
         if ((poll = getch()) == ctrl('w')) {
-          cursy = 0;
-        } else {
+          // TODO:
+          // if (cursy <= 22) fileidx = 0;
+          // if (fileidx == 22) fileidx = 1;
+          // if (fileidx == 22) {
+          // mvprintw(10, 40, "it's fucking it");
+          // fileidx = 1;
+          // }
+          // if (fileidx < maxY - 2) {
+          //   fileidx = 0;
+          // } else {
+          //   fileidx -= maxY - 2;
+          // }
+          // cursy = 0;
+          // fileidx > maxY ? fileidx -= maxY - 2 : fileidx = 0;
+          // fileidx < maxY - 2 ? fileidx = 0 : fileidx -= maxY - 2;
+          // // fileidx <= 21 ? fileidx = 0 : fileidx -= 22;
+        }  // else {
+        else
           W_INVALID_CTRL_SEQ('w', poll);
-        }
         break;
       case ctrl('s'):
         if ((poll = getch()) == ctrl('s')) {
-          if (sizec < maxY - 2)
+          u32 previous_cursy = cursy;
+          if (sizec < maxY - 3)
             cursy = sizec;
           else
-            cursy = maxY - 2;
-          fileidx = cursy;
+            cursy = maxY - 3;
+          // This took me 2 hours to debug, holy crap.
+          fileidx += maxY - 2 - previous_cursy - 1;
+          // cursy = maxY - 3;
+          // fileidx = maxY - cursy;
         } else if (poll == ENTERKEY) {
           W_MESSAGE("Operation not possible");
         } else {
@@ -102,23 +123,27 @@ i32 main(i32 argc, char *argv[]) {
       [[likely]] case ctrl('j') :
         [[fallthrough]];
       case KEY_DOWN:
-        fileidx++;
-        if (cursy < dirc->size() - 1) cursy++;
-        if (cursy > maxY - 2) {
-          if (fileidx <= sizec) idx++;
-          cursy = getmaxy(stdscr) - 2;
+        if (fileidx < sizec) cursy++;
+        if (fileidx < sizec) fileidx++;
+        if (cursy >= maxY - 2 && fileidx < sizec) {
+          idx++;
+          cursy = maxY - 3;
         }
         break;
       [[likely]] case ctrl('k') :
         [[fallthrough]];
       case KEY_UP:
-        fileidx--;
-        if (cursy != 0) cursy--;
-        if (cursy == 0 && idx != 0) {
+        // if (cursy == 0 && idx == 0) fileidx = 0;
+        if (cursy != 0) {
+          fileidx--;
+          cursy--;
+        }
+        if (cursy == 0 && idx > 0) {
           idx--;
-          fileidx++;
+          fileidx--;
         }
         break;
+
       case '0' ... '9':
         [[fallthrough]];
       case 'a' ... 'z':
