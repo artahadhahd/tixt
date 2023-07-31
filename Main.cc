@@ -53,6 +53,8 @@ i32 main(i32 argc, char *argv[]) {
   u32 pidx = 2;
   bool running = true;
   u32 maxY = getmaxy(stdscr);
+  // thie file index. you can do `dirc.value().at(fileidx).name` to get the file
+  // name which is needed to open!
   u32 fileidx = 0;
   while (running) {
     if (pidx != idx) {
@@ -81,6 +83,7 @@ i32 main(i32 argc, char *argv[]) {
             cursy = sizec;
           else
             cursy = maxY - 2;
+          fileidx = cursy;
         } else if (poll == ENTERKEY) {
           W_MESSAGE("Operation not possible");
         } else {
@@ -111,7 +114,10 @@ i32 main(i32 argc, char *argv[]) {
       case KEY_UP:
         fileidx--;
         if (cursy != 0) cursy--;
-        if (cursy == 0 && idx != 0) idx--;
+        if (cursy == 0 && idx != 0) {
+          idx--;
+          fileidx++;
+        }
         break;
       case '0' ... '9':
         [[fallthrough]];
