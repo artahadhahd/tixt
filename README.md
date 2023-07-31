@@ -12,10 +12,15 @@ Note that movement can also be done with arrow keys.
 
 ### Inside the Editor
 `ESC` -> clear all warnings
+
 `$q#` -> exit tixt
+
 `$j`  -> go down one line (you can use arrow keys too)
+
 `$k`  -> go up one line   (you can use arrow keys too)
+
 `$w$w`-> go to the top of the screen
+
 `$s$s`-> go to the bottom of the screen
 
 ### Inside the File Manager
