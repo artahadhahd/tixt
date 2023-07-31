@@ -3,8 +3,10 @@
 #include <dirent.h>
 
 #include <cstring>
+#include <fstream>
 #include <iostream>
 
+// TODO: sort directories
 // An abstraction for seeing and managing files and directories
 std::optional<std::vector<tixt::DirectoryContent>>
 tixt::FileManager::get_directory_contents() {
@@ -33,4 +35,18 @@ tixt::FileManager::get_directory_contents() {
   }
   closedir(d);
   return directories;
+}
+
+std::vector<std::string> readfile(std::string path) {
+  std::vector<std::string> lines;
+  std::string tmp;
+  std::fstream fs(path);
+  if (fs.is_open()) {
+    while (fs.peek() != EOF) {
+      getline(fs, tmp);
+      lines.push_back(tmp);
+    }
+  }
+  fs.close();
+  return lines;
 }

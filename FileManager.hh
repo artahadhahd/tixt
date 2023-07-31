@@ -21,9 +21,10 @@ class FileManager {
 
   // Returns std::nullopt if the input is a file instead of a directory
   std::optional<std::vector<DirectoryContent>> get_directory_contents();
+  std::string path = ".";
 
  private:
-  std::string path = ".";
 };
 
 }  // namespace tixt
+std::vector<std::string> readfile(std::string);

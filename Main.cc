@@ -12,7 +12,7 @@
 #define ctrl(key) ((key)&31)
 
 #define BACKGROUND COLOR_BLACK
-#define FOREGROUND COLOR_WHITE
+#define FOREGROUND COLOR_RED
 
 using namespace tixt::types;
 
@@ -48,13 +48,16 @@ i32 main(i32 argc, char *argv[]) {
   u32 idx = 0;
   // this is how many files are in the directory
   u32 const sizec = dirc.value().size() - 1;
+  mvprintw(_WARNY, 2, "%d files found in directory '%s'", sizec,
+           filemanager.path.c_str());
   // pidx stores the previous value of idx. once pidx is updated, the screen
   // will be "re-rendered"
   u32 pidx = 2;
   bool running = true;
   u32 maxY = getmaxy(stdscr);
-  // thie file index. you can do `dirc.value().at(fileidx).name` to get the file
-  // name which is needed to open!
+  u32 ln = 0;
+  // thie file index. you can do `dirc.value().at(fileidx).name` to get the
+  // file's name!
   u32 fileidx = 0;
   while (running) {
     if (pidx != idx) {
@@ -68,47 +71,25 @@ i32 main(i32 argc, char *argv[]) {
       pidx = idx;
     }
     jy = 0;
-    mvprintw(1, 50, "idx: %d fileidx: %d cursey: %d ", idx, fileidx, cursy);
     move(cursy, cursx);
     if (fileidx > sizec) fileidx = sizec;
     switch ((input = getch())) {
       case ctrl('w'):
         if ((poll = getch()) == ctrl('w')) {
-          // TODO:
-          // if (cursy <= 22) fileidx = 0;
-          // if (fileidx == 22) fileidx = 1;
-          // if (fileidx == 22) {
-          // mvprintw(10, 40, "it's fucking it");
-          // fileidx = 1;
-          // }
-          // if (fileidx < maxY - 2) {
-          //   fileidx = 0;
-          // } else {
-          //   fileidx -= maxY - 2;
-          // }
-          // cursy = 0;
-          // fileidx > maxY ? fileidx -= maxY - 2 : fileidx = 0;
-          // fileidx < maxY - 2 ? fileidx = 0 : fileidx -= maxY - 2;
-          // // fileidx <= 21 ? fileidx = 0 : fileidx -= 22;
-        }  // else {
-        else
+          fileidx -= cursy;
+          cursy = 0;
+        } else {
           W_INVALID_CTRL_SEQ('w', poll);
+        }
         break;
       case ctrl('s'):
         if ((poll = getch()) == ctrl('s')) {
-          u32 previous_cursy = cursy;
-          if (sizec < maxY - 3)
-            cursy = sizec;
-          else
-            cursy = maxY - 3;
-          // This took me 2 hours to debug, holy crap.
-          fileidx += maxY - 2 - previous_cursy - 1;
-          // cursy = maxY - 3;
-          // fileidx = maxY - cursy;
-        } else if (poll == ENTERKEY) {
+          fileidx += maxY - 2 < sizec ? maxY - 3 - cursy : sizec;
+          cursy = std::min(sizec, maxY - 3);
+        } else if (poll == ENTERKEY) {  // if user tries to save it
           W_MESSAGE("Operation not possible");
         } else {
-          W_INVALID_CTRL_SEQ('s', poll);
+          W_INVALID_CTRL_SEQ(input, poll);
         }
         break;
       case ctrl('q'):
@@ -133,7 +114,6 @@ i32 main(i32 argc, char *argv[]) {
       [[likely]] case ctrl('k') :
         [[fallthrough]];
       case KEY_UP:
-        // if (cursy == 0 && idx == 0) fileidx = 0;
         if (cursy != 0) {
           fileidx--;
           cursy--;
@@ -143,16 +123,20 @@ i32 main(i32 argc, char *argv[]) {
           fileidx--;
         }
         break;
-
-      case '0' ... '9':
-        [[fallthrough]];
-      case 'a' ... 'z':
-        [[fallthrough]];
-      case 'A' ... 'Z':
-        [[fallthrough]];
-      case '\'':
-        [[fallthrough]];
-      [[unlikely]] case '"':
+      case ENTERKEY:
+        if (dirc.value().at(fileidx).filetype != tixt::File) {
+          endwin();
+          std::cerr << "Cannot open directories in current version\n";
+          return 1;
+        }
+        erase();
+        for (const auto a :
+             readfile(std::string(argv[1]) + "/" +  // exampel code.
+                      dirc.value().at(fileidx).name)) {
+          mvprintw(ln++, 0, "%s", a.c_str());
+        }
+        break;
+      case ' ' ... '~':
         W_MESSAGE("Cannot modify text here");
         break;
       default:
