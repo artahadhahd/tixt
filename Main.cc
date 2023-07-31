@@ -53,6 +53,7 @@ i32 main(i32 argc, char *argv[]) {
   u32 pidx = 2;
   bool running = true;
   u32 maxY = getmaxy(stdscr);
+  u32 fileidx = 0;
   while (running) {
     if (pidx != idx) {
       for (u64 i = idx; i < dirc->size() && i < (u64)maxY - 1 + idx; i++) {
@@ -98,15 +99,17 @@ i32 main(i32 argc, char *argv[]) {
       [[likely]] case ctrl('j') :
         [[fallthrough]];
       case KEY_DOWN:
+        fileidx++;
         if (cursy < dirc->size() - 1) cursy++;
-        if (cursy >= (u32)maxY - 2) {
-          idx++;
+        if (cursy > maxY - 2) {
+          if (fileidx <= sizec) idx++;
           cursy = getmaxy(stdscr) - 2;
         }
         break;
       [[likely]] case ctrl('k') :
         [[fallthrough]];
       case KEY_UP:
+        fileidx--;
         if (cursy != 0) cursy--;
         if (cursy == 0 && idx != 0) idx--;
         break;
