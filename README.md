@@ -6,11 +6,14 @@ Tixt is a new file editor and directory manager focusing on the user's comfort r
 # Keybindings
 `$` is the prefix or `ctrl` key.
 
-`#` is the enter key.
+`#` is the enter key (in the notation).
 
 Note that movement can also be done with arrow keys.
 
 ### Inside the Editor
+Not Implemented yet.
+
+### Inside the File Manager
 `ESC` -> clear all warnings
 
 `$q#` -> exit tixt
@@ -22,9 +25,6 @@ Note that movement can also be done with arrow keys.
 `$w$w`-> go to the top of the screen
 
 `$s$s`-> go to the bottom of the screen
-
-### Inside the File Manager
-Not Implemented yet.
 
 
 # Behavior and features
