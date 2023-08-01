@@ -1,5 +1,8 @@
 #pragma once
+
 #include <ncurses.h>
+#define BACKGROUND COLOR_BLACK
+#define FOREGROUND COLOR_WHITE
 
 #ifndef TIXT_TYPES
 #include "Types.hh"
@@ -31,6 +34,14 @@
   attron(COLOR_PAIR(1));        \
   mvprintw(_WARNY, 2, message); \
   attroff(COLOR_PAIR(1))
+
+#define INIT_COLORS()                      \
+  start_color();                           \
+  init_pair(1, COLOR_YELLOW, COLOR_BLACK); \
+  init_pair(2, COLOR_CYAN, BACKGROUND);    \
+  init_pair(3, COLOR_BLUE, BACKGROUND);    \
+  init_pair(4, FOREGROUND, BACKGROUND);    \
+  init_pair(5, BACKGROUND, FOREGROUND)
 
 #define TIXT_NCURSES_UTILS
 #endif
