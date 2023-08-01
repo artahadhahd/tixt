@@ -4,27 +4,33 @@
 #include <iostream>
 #include <optional>
 
-#include "tixt/FileManager.hh"
-#include "tixt/Types.hh"
-#include "tixt/Utils.hh"
+#include "tixt/tixt.hh"
 
 #define FOREGROUND COLOR_WHITE
 #define BACKGROUND COLOR_BLACK
 
 using namespace tixt::types;
 
-void filemanager_wrapper(std::string a) {
+void tixt_mainloop(std::string a) {
   using namespace tixt;
   FileManager filemgr(a);
   auto dirc = filemgr.get_directory_contents();
   while (filemgr.running) {
+    u32 const sizec = dirc.value().size();
+    mvprintw(_WARNY, 2, "%d files found in directory '%s'", sizec,
+             filemgr.path.c_str());
     filemgr.print(dirc);
     move(filemgr.cursy, filemgr.cursx);
     auto userinput = filemgr.mainloop(dirc);
     if (!userinput.has_value()) continue;
-    if (userinput.value().filetype == tixt::Directory) {
+    auto filetype = userinput.value().filetype;
+    if (filetype == Directory) {
       erase();
-      filemanager_wrapper(a + "/" + userinput.value().name);
+      tixt_mainloop(a + "/" + userinput.value().name);
+    } else if (filetype == File) {
+    } else {
+      endwin();
+      std::cerr << "Symlinks cannot be opened in current version\n";
     }
   }
 }
@@ -56,11 +62,11 @@ i32 main(i32 argc, char *argv[]) {
     return 1;
   }
   // this is how many files are in the directory
-  u32 const sizec = dirc.value().size();
-  mvprintw(_WARNY, 2, "%d files found in directory '%s'", sizec,
-           filemanager.path.c_str());
+  // u32 const sizec = dirc.value().size();
+  // mvprintw(_WARNY, 2, "%d files found in directory '%s'", sizec,
+  // filemanager.path.c_str());
   try {
-    filemanager_wrapper(argc == 1 ? "." : argv[1]);
+    tixt_mainloop(argc == 1 ? "." : argv[1]);
   } catch (std::bad_optional_access e) {
     erase();
     attron(COLOR_PAIR(5));

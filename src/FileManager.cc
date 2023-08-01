@@ -1,5 +1,3 @@
-#include "tixt/FileManager.hh"
-
 #include <dirent.h>
 
 #include <algorithm>
@@ -7,6 +5,8 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+
+#include "tixt/tixt.hh"
 
 using namespace tixt::types;
 
@@ -17,8 +17,13 @@ auto tixt::FileManager::get_directory_contents() -> DirManager {
   DIR *d = opendir(this->path.c_str());
   if (!d) return std::nullopt;
   struct dirent *dir;
+  directories.push_back(DirectoryContent{
+      "..",
+      tixt::Directory,
+  });
   while ((dir = readdir(d)) != NULL) {
-    if (strcmp(dir->d_name, ".") == 0) continue;
+    if (strcmp(dir->d_name, ".") == 0 || strcmp(dir->d_name, "..") == 0)
+      continue;
     if (dir->d_type == 4) {  // if it's a directory
       directories.push_back(tixt::DirectoryContent{
           dir->d_name,
