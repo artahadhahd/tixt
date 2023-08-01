@@ -1,7 +1,5 @@
 #pragma once
-#ifndef TYPES_H_TIXT
-#define TYPES_H_TIXT
-
+#define TIXT_TYPES
 namespace tixt {
 namespace types {
 typedef char i8;
@@ -16,5 +14,3 @@ typedef float f32;
 typedef double f64;
 }  // namespace types
 }  // namespace tixt
-
-#endif

@@ -1,12 +1,13 @@
 #pragma once
+#define TIXT_FILEMGR
+
 #include <ncurses.h>
 
 #include <optional>
 #include <string>
 #include <vector>
 
-#include "Types.hh"
-#include "Utils.hh"
+#include "tixt.hh"
 
 #define KEY_ESC   27
 #define ENTERKEY  13
