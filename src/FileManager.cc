@@ -1,4 +1,4 @@
-#include "FileManager.hh"
+#include "tixt/FileManager.hh"
 
 #include <dirent.h>
 
@@ -12,8 +12,8 @@ using namespace tixt::types;
 
 // TODO: sort directories
 // An abstraction for seeing and managing files and directories
-std::optional<std::vector<tixt::DirectoryContent>>
-tixt::FileManager::get_directory_contents() {
+auto tixt::FileManager::get_directory_contents()
+    -> std::optional<std::vector<tixt::DirectoryContent>> {
   std::vector<tixt::DirectoryContent> directories;
   DIR *d = opendir(this->path.c_str());
   if (!d) return std::nullopt;
@@ -21,17 +21,17 @@ tixt::FileManager::get_directory_contents() {
   while ((dir = readdir(d)) != NULL) {
     if (strcmp(dir->d_name, ".") == 0) continue;
     if (dir->d_type == 4) {  // if it's a directory
-      directories.push_back((tixt::DirectoryContent){
+      directories.push_back(tixt::DirectoryContent{
           dir->d_name,
           tixt::Directory,
       });
     } else if (dir->d_type == 10) {  // If it's a symlink
-      directories.push_back((tixt::DirectoryContent){
+      directories.push_back(tixt::DirectoryContent{
           dir->d_name,
           tixt::Symlink,
       });
     } else {
-      directories.push_back((tixt::DirectoryContent){
+      directories.push_back(tixt::DirectoryContent{
           dir->d_name,
           tixt::File,
       });
@@ -41,7 +41,7 @@ tixt::FileManager::get_directory_contents() {
   return directories;
 }
 
-std::vector<std::string> readfile(std::string path) {
+auto readfile(std::string path) -> std::vector<std::string> {
   std::vector<std::string> lines;
   std::string tmp;
   std::fstream fs(path);
@@ -54,6 +54,7 @@ std::vector<std::string> readfile(std::string path) {
   fs.close();
   return lines;
 }
+
 void tixt::FileManager::print(DirManager dirc) {
   if (this->pidx != this->idx) {
     for (u64 i = this->idx;
@@ -82,9 +83,7 @@ void tixt::FileManager::mainloop(DirManager dirc) {
     pidx = idx;
   }
   jy = 0;
-  // move(cursy, cursx);
   if (fileidx > sizec) fileidx = sizec;
-  // if (fileidx > sizec) fileidx = sizec;
   switch ((input = getch())) {
     case ctrl('w'):
       if ((poll = getch()) == ctrl('w')) {

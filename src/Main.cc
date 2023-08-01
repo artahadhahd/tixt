@@ -1,15 +1,10 @@
-#include <curses.h>
 #include <ncurses.h>
 
 #include <iostream>
 
-#include "FileManager.hh"
-#include "Types.hh"
-#include "Utils.hh"
-
-#define KEY_ESC   27
-#define ENTERKEY  13
-#define ctrl(key) ((key)&31)
+#include "tixt/FileManager.hh"
+#include "tixt/Types.hh"
+#include "tixt/Utils.hh"
 
 #define FOREGROUND COLOR_WHITE
 #define BACKGROUND COLOR_BLACK
@@ -46,10 +41,8 @@ i32 main(i32 argc, char *argv[]) {
   u32 const sizec = dirc.value().size();
   mvprintw(_WARNY, 2, "%d files found in directory '%s'", sizec,
            filemanager.path.c_str());
-  move(0, 0);
   while (filemanager.running) {
     filemanager.print(dirc);
-    move(0, 0);
     move(filemanager.cursy, filemanager.cursx);
     filemanager.mainloop(dirc);
   }

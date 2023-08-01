@@ -1,5 +1,6 @@
 all:
-	g++ *.cc -o tixt -I. -Wall -Wextra -lncurses -std=c++20
+	@g++ src/*.cc -o tixt -I. -Wall -Wextra -lncurses -std=c++20
+	@echo "Compiled Successfully. Run 'make install' as root now."
 
-sandwich:
+install: ~/.config/tixt
 	cp ./tixt /usr/bin
