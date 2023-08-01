@@ -27,6 +27,7 @@ struct DirectoryContent {
 };
 
 typedef std::optional<std::vector<DirectoryContent>> DirManager;
+typedef std::optional<DirectoryContent> MaybeDirectory;
 
 class FileManager {
  public:
@@ -36,7 +37,8 @@ class FileManager {
   std::optional<std::vector<DirectoryContent>> get_directory_contents();
   std::string path = ".";
   void print(DirManager);
-  void mainloop(DirManager);
+  // Returns std::nullopt if the user has chosen nothing.
+  MaybeDirectory mainloop(DirManager);
   bool running = true;
   u32 cursy = 0;
   u32 cursx = 0;

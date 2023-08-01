@@ -1,6 +1,7 @@
 #include <ncurses.h>
 
 #include <iostream>
+#include <optional>
 
 #include "tixt/FileManager.hh"
 #include "tixt/Types.hh"
@@ -10,6 +11,22 @@
 #define BACKGROUND COLOR_BLACK
 
 using namespace tixt::types;
+
+void filemanager_wrapper(std::string a) {
+  using namespace tixt;
+  FileManager filemgr(a);
+  auto dirc = filemgr.get_directory_contents();
+  while (filemgr.running) {
+    filemgr.print(dirc);
+    move(filemgr.cursy, filemgr.cursx);
+    auto userinput = filemgr.mainloop(dirc);
+    if (!userinput.has_value()) continue;
+    if (userinput.value().filetype == tixt::Directory) {
+      erase();
+      filemanager_wrapper(a + "/" + userinput.value().name);
+    }
+  }
+}
 
 i32 main(i32 argc, char *argv[]) {
   initscr();
@@ -41,10 +58,6 @@ i32 main(i32 argc, char *argv[]) {
   u32 const sizec = dirc.value().size();
   mvprintw(_WARNY, 2, "%d files found in directory '%s'", sizec,
            filemanager.path.c_str());
-  while (filemanager.running) {
-    filemanager.print(dirc);
-    move(filemanager.cursy, filemanager.cursx);
-    filemanager.mainloop(dirc);
-  }
+  filemanager_wrapper(argc == 1 ? "." : argv[1]);
   endwin();
 }

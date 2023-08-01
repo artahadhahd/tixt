@@ -12,8 +12,7 @@ using namespace tixt::types;
 
 // TODO: sort directories
 // An abstraction for seeing and managing files and directories
-auto tixt::FileManager::get_directory_contents()
-    -> std::optional<std::vector<tixt::DirectoryContent>> {
+auto tixt::FileManager::get_directory_contents() -> DirManager {
   std::vector<tixt::DirectoryContent> directories;
   DIR *d = opendir(this->path.c_str());
   if (!d) return std::nullopt;
@@ -70,7 +69,7 @@ void tixt::FileManager::print(DirManager dirc) {
   this->jy = 0;
 }
 
-void tixt::FileManager::mainloop(DirManager dirc) {
+auto tixt::FileManager::mainloop(DirManager dirc) -> MaybeDirectory {
   const u32 sizec = dirc.value().size() - 1;
   if (pidx != idx) {
     for (u64 i = idx; i < dirc->size() && i < (u64)maxY - 1 + idx; i++) {
@@ -104,10 +103,12 @@ void tixt::FileManager::mainloop(DirManager dirc) {
       }
       break;
     case ctrl('q'):
-      if ((poll = getch()) == ENTERKEY)
-        running = false;
-      else
+      if ((poll = getch()) == ENTERKEY) {
+        endwin();
+        exit(0);
+      } else {
         W_INVALID_CTRL_SEQ('q', poll);
+      }
       break;
     case KEY_ESC:
       W_CLEARWARNINGS();
@@ -137,8 +138,12 @@ void tixt::FileManager::mainloop(DirManager dirc) {
     case ' ' ... '~':
       W_MESSAGE("Cannot modify text here");
       break;
+    case ENTERKEY:
+      return DirectoryContent{dirc.value().at(fileidx).name,
+                              dirc.value().at(fileidx).filetype};
     default:
       W_MESSAGE("Invalid Sequence");
       break;
   }
+  return std::nullopt;
 }
