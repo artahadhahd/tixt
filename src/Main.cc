@@ -1,3 +1,4 @@
+#include <curses.h>
 #include <ncurses.h>
 
 #include <iostream>
@@ -58,6 +59,14 @@ i32 main(i32 argc, char *argv[]) {
   u32 const sizec = dirc.value().size();
   mvprintw(_WARNY, 2, "%d files found in directory '%s'", sizec,
            filemanager.path.c_str());
-  filemanager_wrapper(argc == 1 ? "." : argv[1]);
+  try {
+    filemanager_wrapper(argc == 1 ? "." : argv[1]);
+  } catch (std::bad_optional_access e) {
+    erase();
+    attron(COLOR_PAIR(5));
+    printw("Please run tixt as root");
+    attroff(COLOR_PAIR(5));
+    getch();
+  }
   endwin();
 }
