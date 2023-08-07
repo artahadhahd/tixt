@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iostream>
 
+#include "tixt/Editor.hh"
 #include "tixt/tixt.hh"
 
 using namespace tixt::types;
@@ -144,6 +145,11 @@ auto tixt::FileManager::mainloop(DirManager dirc) -> MaybeDirectory {
       W_MESSAGE("Cannot modify text here");
       break;
     case ENTERKEY:
+      if (dirc.value().at(fileidx).filetype == tixt::File) {
+        Editor ed(dirc.value().at(fileidx).name);
+        erase();
+        ed.mainloop();
+      }
       return DirectoryContent{dirc.value().at(fileidx).name,
                               dirc.value().at(fileidx).filetype};
     default:

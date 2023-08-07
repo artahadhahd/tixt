@@ -1,8 +1,11 @@
+#include <curses.h>
 #include <ncurses.h>
 
 #include <iostream>
 #include <optional>
 
+#include "tixt/Editor.hh"
+#include "tixt/FileManager.hh"
 #include "tixt/tixt.hh"
 
 #define FOREGROUND COLOR_WHITE
@@ -10,7 +13,7 @@
 
 using namespace tixt::types;
 
-void tixt_mainloop(std::string);
+void tixt_mainloop(std::string &);
 
 i32 main(i32 argc, char *argv[]) {
   initscr();
@@ -27,26 +30,22 @@ i32 main(i32 argc, char *argv[]) {
   tixt::DirManager dirc = filemanager.get_directory_contents();
   // This occurs when the user wants to open a file.
   if (!dirc.has_value()) {
-    endwin();
-    std::cerr << "NotImplemented!\n";
-    return 1;
+    tixt::Editor editor(argv[1]);
   }
-  try {
-    tixt_mainloop(argc == 1 ? "." : argv[1]);
-  } catch (std::bad_optional_access e) {
-    erase();
-    attron(COLOR_PAIR(5));
-    printw("Please run tixt as root");
-    attroff(COLOR_PAIR(5));
-    getch();
-  }
+  std::string inp = argc == 1 ? "." : argv[1];
+  tixt_mainloop(inp);
   endwin();
 }
 
-void tixt_mainloop(std::string a) {
+void tixt_mainloop(std::string &a) {
   using namespace tixt;
   FileManager filemgr(a);
   auto dirc = filemgr.get_directory_contents();
+  if (!dirc.has_value()) {
+    tixt::Editor ed(a);
+    ed.mainloop();
+    return;
+  }
   while (filemgr.running) {
     u32 const sizec = dirc.value().size();
     mvprintw(_WARNY, 2, "%d files found in directory '%s'", sizec,
@@ -58,9 +57,9 @@ void tixt_mainloop(std::string a) {
     auto filetype = userinput.value().filetype;
     if (filetype == Directory) {
       erase();
-      tixt_mainloop(a + "/" + userinput.value().name);
-    } else if (filetype == File) {
-    } else {
+      a += "/" + userinput.value().name;
+      tixt_mainloop(a);
+    } else if (filetype == tixt::Symlink) {
       endwin();
       std::cerr << "Symlinks cannot be opened in current version\n";
     }
