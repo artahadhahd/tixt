@@ -11,6 +11,7 @@ void tixt::Editor::mainloop() {
   // for (auto const a : buffer) {
   // mvprintw(jy++, 3, "%s", a.c_str());
   // }
+  // print buffer
   for (u32 j = idx; j < buffer.size() && j < getmaxy(stdscr) - 2; j++) {
     mvprintw(j, 4, "%s", buffer.at(j).c_str());
     mvprintw(j, 2, "%d", j + 1);
@@ -20,7 +21,7 @@ void tixt::Editor::mainloop() {
     switch (input) {
       case ctrl('q'):
         if ((poll = getch()) == ENTERKEY) {
-          // free resources
+          // FIXME: free resources
           endwin();
           exit(0);
         }
