@@ -1,7 +1,7 @@
 # Tixt
 Tixt is a new file editor and directory manager focusing on the user's comfort rather than its own power. 
 
-## This is an expermintal product! Please report bugs.
+## This is an experimental product! Please report bugs.
 
 # Keybindings
 `$` is the prefix or `ctrl` key.
