@@ -6,7 +6,6 @@
 #include <fstream>
 #include <iostream>
 
-#include "tixt/Editor.hh"
 #include "tixt/tixt.hh"
 
 using namespace tixt::types;

@@ -22,5 +22,6 @@ class Editor {
   u32 idx = 0;
   u32 cursy = 0;
   u32 cursx = 4;
+  u32 acx = 0;
 };
 }  // namespace tixt

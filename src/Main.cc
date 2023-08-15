@@ -4,8 +4,6 @@
 #include <iostream>
 #include <optional>
 
-#include "tixt/Editor.hh"
-#include "tixt/FileManager.hh"
 #include "tixt/tixt.hh"
 
 #define FOREGROUND COLOR_WHITE
@@ -62,6 +60,7 @@ void tixt_mainloop(std::string &a) {
     } else if (filetype == tixt::Symlink) {
       endwin();
       std::cerr << "Symlinks cannot be opened in current version\n";
+      exit(0);
     }
   }
 }
