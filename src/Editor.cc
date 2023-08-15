@@ -1,5 +1,12 @@
 #include "tixt/Editor.hh"
 
+static void print(u32 idx, std::vector<std::string> buffer) {
+  for (u32 j = idx; j < buffer.size() && j < (u32)getmaxy(stdscr) - 2; j++) {
+    mvprintw(j, 4, "%s", buffer.at(j).c_str());
+    mvprintw(j, 2, "%d", j + 1);
+  }
+}
+
 #include "tixt/FileManager.hh"
 #include "tixt/tixt.hh"
 void tixt::Editor::mainloop() {
@@ -9,11 +16,8 @@ void tixt::Editor::mainloop() {
     has_been_read = true;
   }
   move(cursy, cursx);
+  print(idx, buffer);
   u32 bufsize = buffer.size() - 1;
-  for (u32 j = idx; j < buffer.size() && j < (u32)getmaxy(stdscr) - 2; j++) {
-    mvprintw(j, 4, "%s", buffer.at(j).c_str());
-    mvprintw(j, 2, "%d", j + 1);
-  }
   move(cursy, cursx);
   while ((input = getch())) {
     acx = cursx - 4;
@@ -39,8 +43,15 @@ void tixt::Editor::mainloop() {
       case ctrl('k'):
         if (cursy != 0) cursy--;
         break;
+      case KEY_RIGHT:
+        [[fallthrough]];
       case ctrl('l'):
         cursx++;
+        break;
+      case KEY_LEFT:
+        [[fallthrough]];
+      case ctrl('h'):
+        if (cursx > 4) cursx--;
         break;
       [[likely]] case ' ' ... '~':
         mvprintw(cursy, cursx, "%c", input);
